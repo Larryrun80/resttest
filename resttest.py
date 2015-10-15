@@ -1,11 +1,20 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Filename: resttest.py
+
+import os
+import traceback 
+
 import arrow
 import requests
 import yaml
 
-YAML_FILE = 'test.yaml'
+from utils import colortext
+
+YAML_DIR = 'testfiles'
 
 def print_log(log_words):
-    prefix = '[ {0} ]'.format(arrow.now('Asia/Shanghai').format('YYYY-MM-DD'))
+    prefix = '[ {0} ]'.format(arrow.now('Asia/Shanghai').format('YYYY-MM-DD HH:mm:ss:SSS'))
     print('{0} {1}'.format(prefix, log_words))
 
 def do_test(test_list, settings):
@@ -30,38 +39,54 @@ def do_test(test_list, settings):
             test_info[key] = test_list[key]
 
     request_url = settings['base_url'] + test_list['route']
-    print_log('starting test {0}'.format(test_list['test_id']))
+    print_log('dealing {0}'.format(colortext.output(test_list['test_id'], 'yellow')))
     print_log('desc: {0}'.format(test_list['description']))
     print_log('trying to {0} {1}'.format(test_info['method'], request_url))
     r = requests.get(request_url)
+
+    result = ''
     if r.status_code == test_info['expected_status']:
-        print_log('check status passed! status:{0}'.format(r.status_code))
+        result = colortext.output('SUCCESSED', 'blue')
     else:
-        print_log('check status failed! get status:{0}'.format(r.status_code))
+        result = colortext.output('FAILED', 'red')
+    print_log('check status {0}! status:{1}'.format(result, r.status_code))
 
 
 if __name__ == '__main__':
-    with open(YAML_FILE, encoding='utf-8') as f:
-        test_info = yaml.load(f)
+    try:
+        if not os.path.isdir(YAML_DIR):
+            raise RuntimeError('yaml directory {0} not exists!'.format(YAML_DIR))
 
-        # create base infomation
-        base_settings = {
-            'test_set': '',
-            'base_url': '',
-            'headers': {},
-        }
+        for yfile in os.listdir(YAML_DIR):
+            testfile = '{0}/{1}'.format(YAML_DIR, yfile)
+            if os.path.isfile(testfile) and yfile.endswith('.yaml'):
+                with open(testfile, encoding='utf-8') as f:
+                    test_info = yaml.load(f)
+                    if not isinstance(test_info, list):
+                        break
 
-        # filling base settings
-        for yaml_conf in test_info:
-            if 'base_settings' in yaml_conf.keys():
-                for key in base_settings.keys():
-                    if key in yaml_conf['base_settings'].keys():
-                        base_settings[key] = yaml_conf['base_settings'][key]
+                    # defining base infomation
+                    base_settings = {
+                        'test_set': '',
+                        'base_url': '',
+                        'headers': {},
+                    }
 
-        # starting test
-        for yaml_conf in test_info:
-            if 'rest_tests' in yaml_conf.keys():
-                for item in yaml_conf['rest_tests']:
-                    do_test(item, base_settings)
+                    # filling base settings
+                    for yaml_conf in test_info:
+                        if 'base_settings' in yaml_conf.keys():
+                            for key in base_settings.keys():
+                                if key in yaml_conf['base_settings'].keys():
+                                    base_settings[key] = yaml_conf['base_settings'][key]
 
+                    header = '-'*15 + ' TESTING SET {0} '.format(base_settings['test_set']) + '-'*15
+                    print_log(colortext.output(header, 'white'))
+
+                    # starting test
+                    for yaml_conf in test_info:
+                        if 'rest_tests' in yaml_conf.keys():
+                            for item in yaml_conf['rest_tests']:
+                                do_test(item, base_settings)
+    except:  
+        traceback.print_exc()  
 
