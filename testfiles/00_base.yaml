@@ -1,0 +1,26 @@
+- base_settings:
+    test_set: "IQG_BaseInfo"
+    base_url: "http://api.v3.iqianggou.com/api/"
+    headers: {}
+
+- rest_tests:
+    - test_id: 'get_zones'
+      description: 'get all support zones'
+      route: 'zone'
+    - test_id: 'get_zones_2'
+      description: 'another method to get all support zones'
+      route: 'zone'
+      method: 'GET'
+      headers: {}
+      expected_status: 201
+    - test_id: 'get_zones_3'
+      description: 'method to check zones with shanghai'
+      route: 'zone'
+      method: 'GET'
+      headers: {}
+      expected_include: '上海'
+    - test_id: 'get_zones_4'
+      description: 'method to check zones if city id > 1000'
+      route: 'zone'
+      method: 'GET'
+      headers: {}

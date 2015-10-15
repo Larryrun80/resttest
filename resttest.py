@@ -32,6 +32,7 @@ def do_test(test_list, settings):
     test_info = {
         'method': 'GET',
         'expected_status': 200,
+        'expected_include': None,
         }
 
     for key in test_info:
@@ -44,12 +45,37 @@ def do_test(test_list, settings):
     print_log('trying to {0} {1}'.format(test_info['method'], request_url))
     r = requests.get(request_url)
 
-    result = ''
-    if r.status_code == test_info['expected_status']:
+    result = colortext.output('FAILED', 'red')
+    extra_info = 'http status is ' + str(r.status_code)
+    success = True
+
+    if r.status_code != test_info['expected_status']:
+        success = False
+
+    if test_info['expected_include']:
+        if test_info['expected_include'] not in r.text:
+            success = False
+            extra_info += ', without string {0}'.format(test_info['expected_include'])
+        else:
+            extra_info += ', with string {0}'.format(test_info['expected_include'])
+
+    if success:
         result = colortext.output('SUCCESSED', 'blue')
-    else:
-        result = colortext.output('FAILED', 'red')
-    print_log('check status {0}! status:{1}'.format(result, r.status_code))
+
+    print_log('test {0}! {1}'.format(result, extra_info))
+    return success
+
+def get_base_settings(yaml_data):
+    base_settings = {
+                        'test_set': '',
+                        'base_url': '',
+                        'headers': {},
+                    }
+    for key in base_settings.keys():
+        if key in yaml_data.keys():
+            base_settings[key] = yaml_data[key]
+
+    return base_settings
 
 
 if __name__ == '__main__':
@@ -65,28 +91,27 @@ if __name__ == '__main__':
                     if not isinstance(test_info, list):
                         break
 
-                    # defining base infomation
-                    base_settings = {
-                        'test_set': '',
-                        'base_url': '',
-                        'headers': {},
-                    }
-
                     # filling base settings
                     for yaml_conf in test_info:
                         if 'base_settings' in yaml_conf.keys():
-                            for key in base_settings.keys():
-                                if key in yaml_conf['base_settings'].keys():
-                                    base_settings[key] = yaml_conf['base_settings'][key]
+                            base_settings = get_base_settings(yaml_conf['base_settings'])
+
+                    if not base_settings:
+                        raise RuntimeError('failed to get base settings')
 
                     header = '-'*15 + ' TESTING SET {0} '.format(base_settings['test_set']) + '-'*15
                     print_log(colortext.output(header, 'white'))
 
                     # starting test
+                    success_count = 0
                     for yaml_conf in test_info:
                         if 'rest_tests' in yaml_conf.keys():
                             for item in yaml_conf['rest_tests']:
-                                do_test(item, base_settings)
+                                if do_test(item, base_settings):
+                                    success_count += 1
+                            print_log('-' * 40)
+                            summary = 'tested {0} items, {1} success and {2} failed'.format(len(yaml_conf['rest_tests']), success_count, len(yaml_conf['rest_tests']) - success_count)
+                            print_log(colortext.output(summary, 'white'))
     except:  
         traceback.print_exc()  
 
