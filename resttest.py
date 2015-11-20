@@ -3,7 +3,7 @@
 # Filename: resttest.py
 
 import os
-import traceback 
+import traceback
 
 import arrow
 import requests
@@ -13,9 +13,12 @@ from utils import colortext
 
 YAML_DIR = 'testfiles'
 
+
 def print_log(log_words):
-    prefix = '[ {0} ]'.format(arrow.now('Asia/Shanghai').format('YYYY-MM-DD HH:mm:ss:SSS'))
+    prefix = '[ {0} ]'.format(arrow.now('Asia/Shanghai')
+                                   .format('YYYY-MM-DD HH:mm:ss:SSS'))
     print('{0} {1}'.format(prefix, log_words))
+
 
 def do_test(test_list, settings):
     base_items = ('test_id', 'description', 'route')
@@ -40,7 +43,7 @@ def do_test(test_list, settings):
             test_info[key] = test_list[key]
 
     request_url = settings['base_url'] + test_list['route']
-    print_log('dealing {0}'.format(colortext.output(test_list['test_id'], 'yellow')))
+    print_log('dealing {0}'.format(colortext.output(test_list['test_id'],  'yellow')))
     print_log('desc: {0}'.format(test_list['description']))
     print_log('trying to {0} {1}'.format(test_info['method'], request_url))
     r = requests.get(request_url)
@@ -55,15 +58,18 @@ def do_test(test_list, settings):
     if test_info['expected_include']:
         if test_info['expected_include'] not in r.text:
             success = False
-            extra_info += ', without string {0}'.format(test_info['expected_include'])
+            extra_info +=\
+                ', without string {0}'.format(test_info['expected_include'])
         else:
-            extra_info += ', with string {0}'.format(test_info['expected_include'])
+            extra_info +=\
+                    ', with string {0}'.format(test_info['expected_include'])
 
     if success:
         result = colortext.output('SUCCESSED', 'blue')
 
     print_log('test {0}! {1}'.format(result, extra_info))
     return success
+
 
 def get_base_settings(yaml_data):
     base_settings = {
@@ -112,6 +118,5 @@ if __name__ == '__main__':
                             print_log('-' * 40)
                             summary = 'tested {0} items, {1} success and {2} failed'.format(len(yaml_conf['rest_tests']), success_count, len(yaml_conf['rest_tests']) - success_count)
                             print_log(colortext.output(summary, 'white'))
-    except:  
-        traceback.print_exc()  
-
+    except:
+        traceback.print_exc()
