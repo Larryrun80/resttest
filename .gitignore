@@ -1,0 +1,18 @@
+# Cache and logs
+*.pyc
+.DS_Store
+
+# Parameters
+instance/
+testfiles/
+
+# Assets and user uploads
+
+# Backup files
+*.swp
+*.bak
+*~
+
+# ignore some test files
+
+# tmplog
