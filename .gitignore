@@ -14,5 +14,6 @@ testfiles/
 *~
 
 # ignore some test files
+test.py
 
 # tmplog
