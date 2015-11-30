@@ -21,6 +21,10 @@ class RestTestError(Exception):
                       'file not found: {path}')
     DIR_NOT_FOUND = (100005,
                      'directory not found: {dir}')
+    SOMETHING_MISSING = (100006,
+                         '{sth} not found')
+    UNSUPPORT_TYPE = (100007,
+                      '{type} is not supported when {whenclause}')
 
     # HTTP Requests
     UNSUPPORT_METHOD = (200001,

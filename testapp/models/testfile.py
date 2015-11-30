@@ -52,5 +52,7 @@ class TestFile():
                     tr.print_info()
                     tr.send_request()
                     tr.print_request()
-                    tr.print_response()
                     utils.print_log('-'*50)
+                    tr.check_expections()
+                    # tr.print_response()
+                    utils.print_log('#'*50)
