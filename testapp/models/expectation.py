@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # Filename: expectation.py
+
 import json
 
 from .error import RestTestError
@@ -46,8 +47,6 @@ class Expectation():
                             response.status_code))
 
     def check_include_keys(self, response):
-        print(self.value)
-        print(self.obj)
         if not self.value or not self.obj:
             raise RestTestError('SOMETHING_MISSING',
                                 sth='ecpect value or expect obj')
@@ -68,7 +67,18 @@ class Expectation():
                 self.print_result('FAIL', key=key)
 
     def check_include_words(self, response):
-        pass
+        if not self.value or not self.obj:
+            raise RestTestError('SOMETHING_MISSING',
+                                sth='ecpect value or expect obj')
+
+        for word in self.value:
+            json_value = self.get_json(response)
+            text = json.dumps(json_value, ensure_ascii=False)
+            if word in text:
+                self.print_result('SUCCESS', word=word)
+            else:
+                self.print_result('FAIL', word=word)
+                print(text)
 
     def check_value(self, response):
         pass
@@ -95,6 +105,9 @@ class Expectation():
             e_value = ColorText('be ' + str(self.value), 'yellow')
         if self.type == 'include_keys':
             e_type = ColorText(params['key'], 'yellow')
+            e_value = ColorText('in ' + str(self.obj), 'yellow')
+        if self.type == 'include_words':
+            e_type = ColorText(params['word'], 'yellow')
             e_value = ColorText('in ' + str(self.obj), 'yellow')
         utils.print_log(m_statement.format(e_type, e_value))
 

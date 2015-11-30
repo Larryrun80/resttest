@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # Filename: testrequest.py
 
+import json
 import requests
 
 from .error import RestTestError
@@ -89,4 +90,8 @@ class TestRequest():
             raise RestTestError('NO_RESPONSE')
 
         utils.print_log('status code: {}'.format(self.response.status_code))
-        utils.print_log('response: {}'.format(self.response.json()))
+        r_text = json.dumps(self.response.json(),
+                            ensure_ascii=False,
+                            sort_keys=True,
+                            indent=4)
+        utils.print_log('response: {}'.format(r_text))
