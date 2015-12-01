@@ -25,6 +25,8 @@ class RestTestError(Exception):
                          '{sth} not found')
     UNSUPPORT_TYPE = (100007,
                       '{type} is not supported when {whenclause}')
+    UNSUPPORT_OPERATOR = (100008,
+                          '{operator} is not supported now')
 
     # HTTP Requests
     UNSUPPORT_METHOD = (200001,
@@ -35,6 +37,8 @@ class RestTestError(Exception):
     # OTHER
     UNSUPPORT_COLOR = (900001,
                        'color {color} is not supported')
+    OPRANDS_ERROR = (900002,
+                     'wrong oprands, pass a list include 2 oprands to compare')
 
     def __init__(self, name, **kargs):
         if name not in dir(self):

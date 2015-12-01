@@ -26,6 +26,8 @@ if __name__ == '__main__':
                 if e.code == 100003:
                     utils.print_log(e.message)
                     utils.print_log('skipped!')
+                else:
+                    traceback.print_exc()
             utils.print_log('='*80)
     except:
         traceback.print_exc()

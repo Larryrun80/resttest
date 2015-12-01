@@ -66,8 +66,8 @@ class TestRequest():
             return
 
         for expectation in self.expectations:
-            ep = Expectation(expectation)
-            ep.check_expectation(self.response)
+            ep = Expectation(expectation, self.response)
+            ep.check_expectation()
 
     def print_info(self):
         utils.print_log('testing {}'.format(ColorText(self.id, 'red')))
