@@ -132,10 +132,10 @@ class Expectation():
             e_type = ColorText('status code', 'yellow')
             e_value = ColorText('be ' + str(self.value), 'yellow')
         if self.type == 'include_keys':
-            e_type = ColorText(params['key'], 'yellow')
+            e_type = ColorText('key ' + params['key'], 'yellow')
             e_value = ColorText('in ' + str(self.obj), 'yellow')
         if self.type == 'include_words':
-            e_type = ColorText(params['word'], 'yellow')
+            e_type = ColorText('word ' + params['word'], 'yellow')
             e_value = ColorText('in ' + str(self.obj), 'yellow')
         if self.type == 'value':
             e_type = ColorText(str(self.left), 'yellow')
