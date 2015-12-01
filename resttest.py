@@ -8,6 +8,7 @@ import traceback
 from testapp.utils import utils
 from testapp.models.error import RestTestError
 from testapp.models.testfile import TestFile
+from testapp.models.expectation import Expectation
 
 TEST_DIR = 'testfiles'
 
@@ -29,5 +30,7 @@ if __name__ == '__main__':
                 else:
                     traceback.print_exc()
             utils.print_log('='*80)
+
+        Expectation.print_summary()
     except:
         traceback.print_exc()

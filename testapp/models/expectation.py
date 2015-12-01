@@ -24,6 +24,8 @@ class Expectation():
         '<=': 'le',
         'in': 'in'
     }
+    count = 0
+    successed = 0
 
     def __init__(self, doc, response):
         if not isinstance(doc, dict):
@@ -120,7 +122,10 @@ class Expectation():
                                 whenclause='print expectation result')
 
         # print expectation statement
-        m_statement = 'checking expectation:  {} should {}'
+        Expectation.count += 1
+        utils.print_log(ColorText('checking expectation: No.{}'.format(
+            str(Expectation.count)), 'purple'))
+        m_statement = '{} should {}'
 
         e_type = e_value = None
         if self.type == 'status_code':
@@ -140,6 +145,7 @@ class Expectation():
         # print result
         m_result = 'expectation check {}!'
         if result == 'SUCCESS':
+            Expectation.successed += 1
             e_result = ColorText('successed', 'green')
         else:
             if msg:
@@ -247,3 +253,9 @@ class Expectation():
                     return False
 
         return True
+
+    @classmethod
+    def print_summary(cls):
+        utils.print_log('tested {} expectations totally'
+                        ''.format(str(cls.count)))
+        utils.print_log('{} successed'.format(str(cls.successed)))
