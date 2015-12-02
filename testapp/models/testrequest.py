@@ -124,6 +124,5 @@ class TestRequest():
                                 '{' + param + '}', c['default'])
                         else:
                             # if can not find a value
-                            print(c['name'])
                             raise RestTestError('NO_VALUE', param=c['name'])
             return string

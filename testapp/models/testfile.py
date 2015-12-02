@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # Filename: testfile.py
 
+from configparser import ConfigParser
 import json
 import os
 
@@ -17,8 +18,22 @@ class TestFile():
     """docstring for TestFile"""
 
     REQUEST_KEYS = ('id', 'name', 'description', 'order', 'requests',)
+    CONFIG_FILE = os.path.abspath(os.path.dirname(__file__)) \
+        + '/../settings.conf'
 
     def __init__(self, filename):
+            # get config
+            self.debug_mode = False
+            try:
+                config = ConfigParser()
+                config.read(self.CONFIG_FILE)
+                if config.has_section('GENERAL'):
+                    self.debug_mode = \
+                        'true' == config.get('GENERAL', 'Debug_mode').lower()
+            except:
+                utils.print_log('get config failed, debug mode closed')
+
+            # search files
             if os.path.exists(filename) and os.path.isfile(filename):
                 with open(filename, encoding='utf-8') as f:
                     try:
@@ -64,7 +79,8 @@ class TestFile():
                     tr.check_expectations()
 
                     # print response for debug, if needs
-                    tr.print_response()
+                    if self.debug_mode:
+                        tr.print_response()
 
                     # if tr's output is a context's value, update it
                     if tr.response:
