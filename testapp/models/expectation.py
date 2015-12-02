@@ -67,7 +67,8 @@ class Expectation():
                                 sth='value or obj')
 
         for key in self.value:
-            json_value = self.get_json()
+            json_value = utils.get_json_with_path(
+                self.response.json(), self.obj)
             if isinstance(json_value, dict) and key in json_value.keys():
                 self.print_result('SUCCESS', key=key)
             elif isinstance(json_value, list):
@@ -87,7 +88,8 @@ class Expectation():
                                 sth='value or obj')
 
         for word in self.value:
-            json_value = self.get_json()
+            json_value = utils.get_json_with_path(
+                self.response.json(), self.obj)
             text = json.dumps(json_value, ensure_ascii=False)
             if word in text:
                 self.print_result('SUCCESS', word=word)
@@ -153,26 +155,6 @@ class Expectation():
             e_result = ColorText('failed', 'red')
         utils.print_log(m_result.format(e_result, msg))
 
-    def get_json(self):
-        path = str(self.obj)
-        if not path.startswith('.'):
-            raise RestTestError('FORMAT_ERROR',
-                                correct_type='string start with "."')
-
-        json_value = self.response.json()
-        if path == '.':
-            return json_value
-
-        elements = path[1:].split('.')
-        try:
-            for element in elements:
-                json_value = json_value[element]
-        except:
-            raise RestTestError('KEY_NOT_FOUND',
-                                key=element,
-                                collection=json_value)
-        return json_value
-
     def pass_expression(self):
         oprands = self.deal_operands()
         return self.campare_operands(oprands)
@@ -186,7 +168,8 @@ class Expectation():
         for i, item in enumerate(to_deal, 0):
             if isinstance(item, str) and str(item).startswith('.'):
                 key = str(item)[1:]
-                json_data = self.get_json()
+                json_data = utils.get_json_with_path(
+                    self.response.json(), self.obj)
                 # if what we want is a value of key
                 if not isinstance(json_data, list):
                     if key in json_data.keys():

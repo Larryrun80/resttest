@@ -34,6 +34,10 @@ class RestTestError(Exception):
     NO_RESPONSE = (200002,
                    'no response info, send request first')
 
+    # CONTEXT
+    NO_VALUE = (300001,
+                'not found value of {param} when update context')
+
     # OTHER
     UNSUPPORT_COLOR = (900001,
                        'color {color} is not supported')

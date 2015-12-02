@@ -5,6 +5,8 @@
 import json
 import os
 
+import arrow
+
 from .error import RestTestError
 from .colortext import ColorText
 from .testrequest import TestRequest
@@ -32,6 +34,9 @@ class TestFile():
                         self.description = t_json['description']
                         self.order = t_json['order']
                         self.requests = t_json['requests']
+                        self.context = None
+                        if 'context' in t_json.keys():
+                            self.context = t_json['context']
                     except json.decoder.JSONDecodeError:
                         raise RestTestError('ILLEGAL_JSON_FILE',
                                             filename=filename)
@@ -48,11 +53,30 @@ class TestFile():
         for t_id in self.order:
             for request in self.requests:
                 if t_id == request['id']:
-                    tr = TestRequest(request)
+                    tr = TestRequest(request, self.context)
+                    # print general info and request info
                     tr.print_info()
                     tr.send_request()
                     tr.print_request()
                     utils.print_log('-'*50)
-                    tr.check_expections()
-                    # tr.print_response()
+
+                    # start check expectations and print info
+                    tr.check_expectations()
+
+                    # print response for debug, if needs
+                    tr.print_response()
+
+                    # if tr's output is a context's value, update it
+                    if tr.response:
+                        for c in self.context:
+                            if t_id in c['request_id']:
+                                try:
+                                    c['value'] = utils.get_json_with_path(
+                                        tr.response.json(), c['path'])
+                                    c['timestamp'] = arrow.now('Asia/Shanghai')
+                                except:
+                                    utils.print_log('try to get context '
+                                                    'value {} failed'
+                                                    ''.format(c['name']))
+
                     utils.print_log('#'*50)
