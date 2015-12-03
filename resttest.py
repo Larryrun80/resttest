@@ -10,14 +10,20 @@ from testapp.models.error import RestTestError
 from testapp.models.testfile import TestFile
 from testapp.models.expectation import Expectation
 
-TEST_DIR = 'testfiles'
+TEST_DIR = os.path.abspath(os.path.dirname(__file__)) \
+        + '/testfiles'
 
 if __name__ == '__main__':
     try:
         if not os.path.isdir(TEST_DIR):
             raise RestTestError('DIR_NOT_FOUND', dir=TEST_DIR)
 
+        utils.print_log('resttest now begin work!')
+        utils.print_log('scaning folder {}'.format(
+                TEST_DIR))
+
         for tfile in os.listdir(TEST_DIR):
+            utils.print_separator()
             filename = '{0}/{1}'.format(TEST_DIR, tfile)
             try:
                 tf = TestFile(filename)
@@ -29,8 +35,6 @@ if __name__ == '__main__':
                     utils.print_log('skipped!')
                 else:
                     raise e
-            utils.print_log('='*80)
-
         Expectation.print_summary()
     except RestTestError as e:
         utils.print_log(e.message)

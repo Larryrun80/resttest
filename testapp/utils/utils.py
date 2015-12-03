@@ -12,6 +12,12 @@ def print_log(log_words):
     print('{0} {1}'.format(prefix, log_words))
 
 
+def print_separator():
+    print_log('')
+    print_log('.' * 30)
+    print_log('')
+
+
 def get_json_with_path(json_obj, path):
     if not str(path).startswith('.'):
         raise RestTestError('FORMAT_ERROR',
