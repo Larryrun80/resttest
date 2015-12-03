@@ -65,7 +65,7 @@ class TestRequest():
             return
 
         for expectation in self.expectations:
-            ep = Expectation(expectation, self.response)
+            ep = Expectation(expectation, self.response, self.name)
             ep.check_expectation()
 
     def print_info(self):

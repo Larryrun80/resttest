@@ -26,8 +26,9 @@ class Expectation():
     }
     count = 0
     successed = 0
+    failed = []
 
-    def __init__(self, doc, response):
+    def __init__(self, doc, response, api_name):
         if not isinstance(doc, dict):
             raise RestTestError('FORMAT_ERROR', correct_type='dict')
         if 'type' not in doc.keys():
@@ -44,6 +45,7 @@ class Expectation():
             else:
                 setattr(self, attr, None)
 
+        self.name = api_name
         self.response = response
 
     def check_expectation(self):
@@ -142,7 +144,8 @@ class Expectation():
         if self.type == 'value':
             e_type = ColorText(str(self.left), 'yellow')
             e_value = ColorText(str(self.op) + ' ' + str(self.right), 'yellow')
-        utils.print_log(m_statement.format(e_type, e_value))
+        m_statement = m_statement.format(e_type, e_value)
+        utils.print_log(m_statement)
 
         # print result
         m_result = 'expectation check {}!'
@@ -150,6 +153,14 @@ class Expectation():
             Expectation.successed += 1
             e_result = ColorText('successed', 'green')
         else:
+            fail_info = {
+                                        'api': self.name,
+                                        'method': self.response.request.method,
+                                        'url': self.response.url,
+                                        'data': self.response.request.body,
+                                        'expectation': m_statement
+                                    }
+            self.failed.append(fail_info)
             if msg:
                 m_result += ' {}'
             e_result = ColorText('failed', 'red')
@@ -242,3 +253,11 @@ class Expectation():
         utils.print_log('tested {} expectations totally'
                         ''.format(str(cls.count)))
         utils.print_log('{} successed'.format(str(cls.successed)))
+        utils.print_log('following check failed: ')
+        for fail in cls.failed:
+            utils.print_log('')
+            utils.print_log(fail['api'])
+            utils.print_log('{} {}'.format(fail['method'], fail['url']))
+            if fail['data']:
+                utils.print_log(fail['data'])
+            utils.print_log('check failed on {}'.format(fail['expectation']))
