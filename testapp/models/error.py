@@ -16,7 +16,7 @@ class RestTestError(Exception):
     ILLEGAL_DATA = (100002,
                     'illegal data for {param}:  {value}')
     ILLEGAL_JSON_FILE = (100003,
-                         'illegal json file found: {filename}')
+                         'illegal json file, skipped')
     FILE_NOT_FOUND = (100004,
                       'file not found: {path}')
     DIR_NOT_FOUND = (100005,

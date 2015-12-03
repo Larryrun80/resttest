@@ -60,8 +60,7 @@ class Expectation():
         if str(self.response.status_code) == str(self.value):
             self.print_result('SUCCESS')
         else:
-            self.print_result('FAIL', 'get status code {0}'.format(
-                            self.response.status_code))
+            self.print_result('FAIL')
 
     def check_include_keys(self):
         if not self.value or not self.obj:
@@ -112,11 +111,10 @@ class Expectation():
         else:
             self.print_result('FAIL')
 
-    def print_result(self, result, msg=None, **params):
+    def print_result(self, result, **params):
         ''' print_result
             this function is to print suitable result for expectation check
             pass 'SUCCESS' OR 'FAIL' as result
-            pass fail message as msg
             msg only work in 'FAIL' type
             params used to print statement info
         '''
@@ -127,7 +125,7 @@ class Expectation():
 
         # print expectation statement
         Expectation.count += 1
-        utils.print_log(ColorText('checking expectation: No.{}'.format(
+        utils.print_log(ColorText('no. {} expectation being checked'.format(
             str(Expectation.count)), 'purple'))
         m_statement = '{} should {}'
 
@@ -145,26 +143,25 @@ class Expectation():
             e_type = ColorText(str(self.left), 'yellow')
             e_value = ColorText(str(self.op) + ' ' + str(self.right), 'yellow')
         m_statement = m_statement.format(e_type, e_value)
-        utils.print_log(m_statement)
 
         # print result
-        m_result = 'expectation check {}!'
+        m_result = m_statement + '   [ {} ]'
+        check_result = ''
         if result == 'SUCCESS':
             Expectation.successed += 1
-            e_result = ColorText('successed', 'green')
+            check_result = ColorText('passed', 'green')
         else:
             fail_info = {
                                         'api': self.name,
                                         'method': self.response.request.method,
                                         'url': self.response.url,
                                         'data': self.response.request.body,
-                                        'expectation': m_statement
+                                        'expectation': m_statement,
+                                        'code': self.response.status_code,
                                     }
             self.failed.append(fail_info)
-            if msg:
-                m_result += ' {}'
-            e_result = ColorText('failed', 'red')
-        utils.print_log(m_result.format(e_result, msg))
+            check_result = ColorText('failed', 'red')
+        utils.print_log(m_result.format(check_result))
 
     def pass_expression(self):
         oprands = self.deal_operands()
@@ -250,14 +247,28 @@ class Expectation():
 
     @classmethod
     def print_summary(cls):
-        utils.print_log('tested {} expectations totally'
-                        ''.format(str(cls.count)))
-        utils.print_log('{} successed'.format(str(cls.successed)))
-        utils.print_log('following check failed: ')
-        for fail in cls.failed:
+        utils.print_separator()
+        utils.print_log('[ summary ]')
+        utils.print_log('{} expectations checked'.format(str(cls.count)))
+        utils.print_log('{} passed'.format(str(cls.successed)))
+        utils.print_log('{} failed'.format(str(len(cls.failed))))
+
+        if cls.failed:
             utils.print_log('')
-            utils.print_log(fail['api'])
-            utils.print_log('{} {}'.format(fail['method'], fail['url']))
-            if fail['data']:
-                utils.print_log('with data: ' + fail['data'])
-            utils.print_log('check failed on {}'.format(fail['expectation']))
+            utils.print_log('[ fail expectation info ]')
+            for i, expectation in enumerate(cls.failed, 1):
+                if not i == 1:
+                    utils.print_log('')
+                utils.print_log('{}. {}'.format(str(i), expectation['api']))
+                utils.print_log('request url: {} {}'.format(
+                    expectation['method'], expectation['url']))
+                if expectation['data']:
+                    expectation['data'] = expectation['data'].split('&')
+                    for i, data in enumerate(expectation['data'], 0):
+                        if i == 0:
+                            utils.print_log('using param: {}'.format(data))
+                        else:
+                            utils.print_log(' '*6 + '{}'.format(data))
+                utils.print_log('status code: {}'.format(expectation['code']))
+                utils.print_log('failed on {}'.format(
+                    expectation['expectation']))

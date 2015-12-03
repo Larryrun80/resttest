@@ -5,6 +5,7 @@
 # Parameters
 instance/
 testfiles/
+*.conf
 
 # Assets and user uploads
 

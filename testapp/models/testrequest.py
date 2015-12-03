@@ -18,9 +18,8 @@ class TestRequest():
     """
     REQUEST_KEYS = ('id', 'name', 'description', 'method', 'url', 'data')
     SUPPORTED_HTTP_METHODS = ('get', 'post', 'put', 'delete')
-    HTTP_PREFIX = ('http://', 'https://')
 
-    def __init__(self, doc, context, http_prefix='http://'):
+    def __init__(self, doc, context, config=None):
         ''' init method
             passing a json to form an objective
         '''
@@ -33,12 +32,13 @@ class TestRequest():
                                     key=key,
                                     collection='request')
 
+        self.config = config
         self.id = doc['id']
         self.name = doc['name']
         self.description = doc['description']
         self.method = str(doc['method']).lower()
         self.context = context
-        self.url = self.generate_url(http_prefix, doc['url'])
+        self.url = self.generate_url(doc['url'])
         self.data = {}
         for item in doc['data']:
             if item['enabled']:
@@ -48,6 +48,11 @@ class TestRequest():
         self.expectations = None
         if 'expectations' in doc.keys():
             self.expectations = doc['expectations']
+
+    def test(self):
+        self.send_request()
+        self.print_info()
+        self.check_expectations()
 
     def send_request(self):
         if self.method not in self.SUPPORTED_HTTP_METHODS:
@@ -62,6 +67,7 @@ class TestRequest():
         if not self.response:
             raise RestTestError('NO_RESPONSE')
         if not self.expectations:
+            utils.print_log('no exceptation found, passed')
             return
 
         for expectation in self.expectations:
@@ -69,38 +75,38 @@ class TestRequest():
             ep.check_expectation()
 
     def print_info(self):
-        utils.print_log('testing {}'.format(ColorText(self.id, 'red')))
-        utils.print_log(ColorText(self.name, 'blue'))
-        utils.print_log(ColorText(self.description, 'blue'))
-
-    def print_request(self):
+        utils.print_separator()
         if not self.response:
             raise RestTestError('NO_RESPONSE')
-
-        utils.print_log(
-            ColorText(self.method.upper() + ' ' + self.response.url, 'yellow'))
+        utils.print_log('##### case:   {}'.format(ColorText(self.name, 'red')))
+        utils.print_log('####### id:   {}'.format(self.id))
+        utils.print_log('### remark:   {}'.format(self.description))
+        utils.print_log('## request:   {} {}'.format(
+            self.method.upper(), self.response.url))
         if self.data:
-            utils.print_log(
-                ColorText(
-                    'committed data: {}'.format(repr(self.data)), 'yellow'))
+            for i, key in enumerate(self.data.keys(), 0):
+                if i == 0:
+                    utils.print_log('##### data:   {} = {}'.format(
+                        key, self.data[key]))
+                else:
+                    utils.print_log(' '*14 + '{} = {}'.format(
+                        key, self.data[key]))
+        utils.print_log('# response:   return code {}'.format(
+            self.response.status_code))
+        utils.print_log('')
 
-    def print_response(self):
-        if not self.response:
-            raise RestTestError('NO_RESPONSE')
+        if self.config and self.config['debug_mode']:
+            r_text = json.dumps(self.response.json(),
+                                ensure_ascii=False,
+                                sort_keys=True,
+                                indent=4)
+            utils.print_log('response: {}'.format(r_text))
+            utils.print_log('')
 
-        utils.print_log('status code: {}'.format(self.response.status_code))
-        r_text = json.dumps(self.response.json(),
-                            ensure_ascii=False,
-                            sort_keys=True,
-                            indent=4)
-        utils.print_log('response: {}'.format(r_text))
-
-    def generate_url(self, http_prefix, origin_url):
-        if http_prefix not in self.HTTP_PREFIX:
-            raise RestTestError('ILLEGAL_DATA',
-                                param='http_prefix',
-                                value=http_prefix)
-        return http_prefix + self.replace_context_value(origin_url)
+    def generate_url(self, origin_url):
+        if not str(origin_url).startswith('http'):
+            origin_url = 'http://' + str(origin_url)
+        return self.replace_context_value(origin_url)
 
     def replace_context_value(self, string):
         string = str(string)
