@@ -28,9 +28,11 @@ if __name__ == '__main__':
                     utils.print_log(e.message)
                     utils.print_log('skipped!')
                 else:
-                    traceback.print_exc()
+                    raise e
             utils.print_log('='*80)
 
         Expectation.print_summary()
+    except RestTestError as e:
+        utils.print_log(e.message)
     except:
         traceback.print_exc()

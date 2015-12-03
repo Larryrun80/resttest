@@ -259,5 +259,5 @@ class Expectation():
             utils.print_log(fail['api'])
             utils.print_log('{} {}'.format(fail['method'], fail['url']))
             if fail['data']:
-                utils.print_log(fail['data'])
+                utils.print_log('with data: ' + fail['data'])
             utils.print_log('check failed on {}'.format(fail['expectation']))

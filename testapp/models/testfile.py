@@ -91,8 +91,8 @@ class TestFile():
                                         tr.response.json(), c['path'])
                                     c['timestamp'] = arrow.now('Asia/Shanghai')
                                 except:
-                                    utils.print_log('try to get context '
-                                                    'value {} failed'
-                                                    ''.format(c['name']))
+                                    utils.print_log(
+                                        'try to get context value {} failed'
+                                        ''.format(c['name']))
 
                     utils.print_log('#'*50)

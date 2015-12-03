@@ -123,6 +123,7 @@ class TestRequest():
                             string = string.replace(
                                 '{' + param + '}', c['default'])
                         else:
-                            # if can not find a value
-                            raise RestTestError('NO_VALUE', param=c['name'])
+                            # if can not find a value, give blank
+                            string = string.replace(
+                                '{' + param + '}', '')
             return string
