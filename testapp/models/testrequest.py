@@ -67,7 +67,8 @@ class TestRequest():
         if not self.response:
             raise RestTestError('NO_RESPONSE')
         if not self.expectations:
-            utils.print_log('no exceptation found, passed')
+            utils.print_log(
+                ColorText('no exceptation found, passed', 'warning'))
             return
 
         for expectation in self.expectations:
@@ -78,21 +79,24 @@ class TestRequest():
         utils.print_separator()
         if not self.response:
             raise RestTestError('NO_RESPONSE')
-        utils.print_log('##### case:   {}'.format(ColorText(self.name, 'red')))
-        utils.print_log('####### id:   {}'.format(self.id))
-        utils.print_log('### remark:   {}'.format(self.description))
-        utils.print_log('## request:   {} {}'.format(
-            self.method.upper(), self.response.url))
+        utils.print_log('##### case:   {}'.format(
+            ColorText(self.name, 'keywords')))
+        utils.print_log('####### id:   {}'.format(ColorText(self.id, 'keywords')))
+        utils.print_log('### remark:   {}'.format(
+            ColorText(self.description, 'keywords')))
+        r_string = '{} {}'.format(self.method.upper(), self.response.url)
+        utils.print_log('## request:   {}'.format(
+            ColorText(r_string, 'keywords')))
         if self.data:
             for i, key in enumerate(self.data.keys(), 0):
                 if i == 0:
-                    utils.print_log('##### data:   {} = {}'.format(
-                        key, self.data[key]))
+                    utils.print_log('##### data:   {}'.format(
+                        ColorText((key + ' = ' + self.data[key]), 'keywords')))
                 else:
-                    utils.print_log(' '*14 + '{} = {}'.format(
-                        key, self.data[key]))
-        utils.print_log('# response:   return code {}'.format(
-            self.response.status_code))
+                    utils.print_log(' '*14 + '{}'.format(
+                        ColorText((key + ' = ' + self.data[key]), 'keywords')))
+        utils.print_log('# response:   {}'.format(
+            ColorText(self.response.status_code, 'keywords')))
         utils.print_log('')
 
         if self.config and self.config['debug_mode']:

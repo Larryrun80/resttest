@@ -48,7 +48,7 @@ class TestFile():
 
     def print_file_info(self):
         utils.print_log('description: {0}'.format(
-            ColorText(self.description, 'yellow')))
+            ColorText(self.description, 'keywords')))
         utils.print_log('starting test')
 
     def update_context(self, request_id, response):

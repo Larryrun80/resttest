@@ -125,31 +125,32 @@ class Expectation():
 
         # print expectation statement
         Expectation.count += 1
-        utils.print_log(ColorText('no. {} expectation being checked'.format(
-            str(Expectation.count)), 'purple'))
+        utils.print_log('no. {} expectation being checked'.format(
+            ColorText(str(Expectation.count), 'keywords')))
         m_statement = '{} should {}'
 
         e_type = e_value = None
         if self.type == 'status_code':
-            e_type = ColorText('status code', 'yellow')
-            e_value = ColorText('be ' + str(self.value), 'yellow')
+            e_type = 'status code'
+            e_value = 'be ' + str(self.value)
         if self.type == 'include_keys':
-            e_type = ColorText('key ' + params['key'], 'yellow')
-            e_value = ColorText('in ' + str(self.obj), 'yellow')
+            e_type = 'key ' + params['key']
+            e_value = 'in ' + str(self.obj)
         if self.type == 'include_words':
-            e_type = ColorText('word ' + params['word'], 'yellow')
-            e_value = ColorText('in ' + str(self.obj), 'yellow')
+            e_type = 'word ' + params['word']
+            e_value = 'in ' + str(self.obj)
         if self.type == 'value':
-            e_type = ColorText(str(self.left), 'yellow')
-            e_value = ColorText(str(self.op) + ' ' + str(self.right), 'yellow')
-        m_statement = m_statement.format(e_type, e_value)
+            e_type = str(self.left)
+            e_value = str(self.op) + ' ' + str(self.right)
+        m_statement = m_statement.format(
+            ColorText(e_type, 'keywords'), ColorText(e_value, 'keywords'))
 
         # print result
         m_result = m_statement + '   [ {} ]'
         check_result = ''
         if result == 'SUCCESS':
             Expectation.successed += 1
-            check_result = ColorText('passed', 'green')
+            check_result = ColorText('passed', 'success')
         else:
             fail_info = {
                                         'api': self.name,
@@ -160,8 +161,9 @@ class Expectation():
                                         'code': self.response.status_code,
                                     }
             self.failed.append(fail_info)
-            check_result = ColorText('failed', 'red')
+            check_result = ColorText('failed', 'fail')
         utils.print_log(m_result.format(check_result))
+        utils.print_log('test')
 
     def pass_expression(self):
         oprands = self.deal_operands()
@@ -249,17 +251,22 @@ class Expectation():
     def print_summary(cls):
         utils.print_separator()
         utils.print_log('[ summary ]')
-        utils.print_log('{} expectations checked'.format(str(cls.count)))
-        utils.print_log('{} passed'.format(str(cls.successed)))
-        utils.print_log('{} failed'.format(str(len(cls.failed))))
+        utils.print_log('{} expectations checked'.format(
+            ColorText(str(cls.count), 'keywords')))
+        utils.print_log('{} passed'.format(
+            ColorText(str(cls.successed), 'success')))
+        utils.print_log('{} failed'.format(
+            ColorText(str(len(cls.failed)), 'fail')))
 
         if cls.failed:
             utils.print_log('')
-            utils.print_log('[ fail expectation info ]')
+            utils.print_log('[ fail expectation keywords ]')
             for i, expectation in enumerate(cls.failed, 1):
                 if not i == 1:
                     utils.print_log('')
-                utils.print_log('{}. {}'.format(str(i), expectation['api']))
+                msg = ColorText(
+                    '{}. {}'.format(str(i), expectation['api']), 'keywords')
+                utils.print_log(msg)
                 utils.print_log('request url: {} {}'.format(
                     expectation['method'], expectation['url']))
                 if expectation['data']:
@@ -271,4 +278,4 @@ class Expectation():
                             utils.print_log(' '*6 + '{}'.format(data))
                 utils.print_log('status code: {}'.format(expectation['code']))
                 utils.print_log('failed on {}'.format(
-                    expectation['expectation']))
+                   expectation['expectation'], 'fail'))

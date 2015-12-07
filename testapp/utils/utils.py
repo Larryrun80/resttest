@@ -4,17 +4,18 @@
 import arrow
 
 from ..models.error import RestTestError
+from ..models.colortext import ColorText
 
 
 def print_log(log_words):
     prefix = '[ {0} ]'.format(arrow.now('Asia/Shanghai')
                                    .format('YYYY-MM-DD HH:mm:ss:SSS'))
-    print('{0} {1}'.format(prefix, log_words))
+    print(ColorText('{0} {1}'.format(prefix, log_words), 'info'))
 
 
 def print_separator():
     print_log('')
-    print_log('.' * 30)
+    print_log(ColorText('.' * 30, 'seperator'))
     print_log('')
 
 

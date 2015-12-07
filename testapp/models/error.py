@@ -43,6 +43,10 @@ class RestTestError(Exception):
                        'color {color} is not supported')
     OPRANDS_ERROR = (900002,
                      'wrong oprands, pass a list include 2 oprands to compare')
+    TEMPLATE_NOT_FOUND = (900003,
+                          'template {template} is not supported now')
+    UNSUPPORT_TYPE = (900004,
+                      'type {type} is not supported')
 
     def __init__(self, name, **kargs):
         if name not in dir(self):

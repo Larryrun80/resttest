@@ -30,14 +30,45 @@ class ColorText():
         'ENDC':           '\033[0m',
     }
 
-    def __init__(self, text, color):
-        if not isinstance(color, str):
+    DARK_TYPES = {
+        'info':                     'LIGHT_GRAY',
+        'keywords':         'GREEN',
+        'success':              'CYAN',
+        'fail':                         'RED',
+        'warning':              'BROWN',
+        'seperator':            'BLUE'
+    }
+
+    # def __init__(self, text, color):
+    #     if not isinstance(color, str):
+    #         raise RestTestError('FORMAT_ERROR', correct_type='string')
+    #     if str(color).upper() not in self.COLORS.keys():
+    #         raise RestTestError('UNSUPPORT_COLOR', color=color)
+
+    #     self.text = str(text)
+    #     self.color = str(color).upper()
+
+    def __init__(self, text, message_type, template='dark'):
+        if not isinstance(template, str):
             raise RestTestError('FORMAT_ERROR', correct_type='string')
-        if str(color).upper() not in self.COLORS.keys():
-            raise RestTestError('UNSUPPORT_COLOR', color=color)
+        template_name = '{}_TYPES'.format(str(template).upper())
+
+        if template_name not in dir(self):
+            raise RestTestError('TEMPLATE_NOT_FOUND', template=template)
+        else:
+            self.template = getattr(self, template_name)
+
+        message_type = str(message_type).lower()
+        if not isinstance(message_type, str):
+            raise RestTestError('FORMAT_ERROR', correct_type='string')
+        if message_type not in self.template.keys():
+            raise RestTestError('UNSUPPORT_TYPE', type=message_type)
 
         self.text = str(text)
-        self.color = str(color).upper()
+        self.color = self.template[message_type]
 
     def __str__(self):
+        if self.COLORS['ENDC'] in self.text:
+            self.text = self.text.replace(
+                self.COLORS['ENDC'], self.COLORS[self.color])
         return self.COLORS[self.color] + self.text + self.COLORS['ENDC']
