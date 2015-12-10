@@ -18,8 +18,7 @@ class TestFile():
 
     REQUEST_KEYS = ('id', 'name', 'description', 'order', 'requests',)
 
-    def __init__(self, filename, config=None):
-            self.config = config
+    def __init__(self, filename):
             # search files
             if os.path.exists(filename) and os.path.isfile(filename):
                 with open(filename, encoding='utf-8') as f:
@@ -68,7 +67,7 @@ class TestFile():
         for t_id in self.order:
             for request in self.requests:
                 if t_id == request['id']:
-                    tr = TestRequest(request, self.context, self.config)
+                    tr = TestRequest(request, self.context)
                     # print general info and request info
                     tr.test()
 

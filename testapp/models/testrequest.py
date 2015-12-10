@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 # Filename: testrequest.py
 
-import json
 import requests
 
 from .error import RestTestError
@@ -19,7 +18,7 @@ class TestRequest():
     REQUEST_KEYS = ('id', 'name', 'description', 'method', 'url', 'data')
     SUPPORTED_HTTP_METHODS = ('get', 'post', 'put', 'delete')
 
-    def __init__(self, doc, context, config=None):
+    def __init__(self, doc, context):
         ''' init method
             passing a json to form an objective
         '''
@@ -32,7 +31,6 @@ class TestRequest():
                                     key=key,
                                     collection='request')
 
-        self.config = config
         self.id = doc['id']
         self.name = doc['name']
         self.description = doc['description']
@@ -107,14 +105,6 @@ class TestRequest():
         utils.print_log('# response:   {}'.format(
             ColorText(self.response.status_code, 'keywords')))
         utils.print_log('')
-
-        # if self.config and self.config['debug_mode']:
-        #     r_text = json.dumps(self.response.json(),
-        #                         ensure_ascii=False,
-        #                         sort_keys=True,
-        #                         indent=4)
-        #     utils.print_log('response: {}'.format(r_text))
-        #     utils.print_log('')
 
     def generate_url(self, origin_url):
         if not str(origin_url).startswith('http'):

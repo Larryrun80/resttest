@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 # Filename: resttest.py
 
+import argparse
 from configparser import ConfigParser
 import os
-import sys
 import traceback
 
 from testapp.utils import utils
@@ -40,12 +40,19 @@ def read_config():
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--debug',
+                        help='debug mode turned on', action='store_true')
+    args = parser.parse_args()
+
     try:
         if not os.path.isdir(TEST_DIR):
             raise RestTestError('DIR_NOT_FOUND', dir=TEST_DIR)
 
         utils.print_log('resttest now begin work!')
         config = read_config()
+        if args.debug:
+            config['debug_mode'] = True
         utils.print_log('scaning folder {}'.format(
                 TEST_DIR))
 
@@ -56,7 +63,7 @@ if __name__ == '__main__':
             utils.print_log(msg)
             filename = '{0}/{1}'.format(TEST_DIR, tfile)
             try:
-                tf = TestFile(filename, config)
+                tf = TestFile(filename)
                 tf.print_file_info()
                 tf.test_requests()
             except RestTestError as e:
