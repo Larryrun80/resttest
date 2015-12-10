@@ -4,7 +4,7 @@
 
 # Parameters
 instance/
-testfiles/
+testfiles/*
 *.conf
 
 # Assets and user uploads
