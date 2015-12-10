@@ -67,7 +67,8 @@ if __name__ == '__main__':
                     raise e
             except Exception as e:
                 raise e
-        Expectation.print_summary()
+
+        Expectation.print_summary(config['debug_mode'])
     except RestTestError as e:
         traceback.print_exc()
         utils.print_log(e.message)

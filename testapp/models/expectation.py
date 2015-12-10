@@ -159,7 +159,12 @@ class Expectation():
                                         'data': self.response.request.body,
                                         'expectation': m_statement,
                                         'code': self.response.status_code,
-                                    }
+                                        'response':
+                                        json.dumps(self.response.json(),
+                                                   ensure_ascii=False,
+                                                   sort_keys=True,
+                                                   indent=4)
+                                 }
             self.failed.append(fail_info)
             check_result = ColorText('failed', 'fail')
         utils.print_log(m_result.format(check_result))
@@ -248,7 +253,7 @@ class Expectation():
         return True
 
     @classmethod
-    def print_summary(cls):
+    def print_summary(cls, print_response):
         utils.print_separator()
         utils.print_log('[ summary ]')
         utils.print_log('{} expectations checked'.format(
@@ -279,3 +284,5 @@ class Expectation():
                 utils.print_log('status code: {}'.format(expectation['code']))
                 utils.print_log('failed on {}'.format(
                    expectation['expectation'], 'fail'))
+                if print_response:
+                    utils.print_log('response: {}'.format(expectation['response']))

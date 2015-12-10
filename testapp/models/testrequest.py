@@ -108,13 +108,13 @@ class TestRequest():
             ColorText(self.response.status_code, 'keywords')))
         utils.print_log('')
 
-        if self.config and self.config['debug_mode']:
-            r_text = json.dumps(self.response.json(),
-                                ensure_ascii=False,
-                                sort_keys=True,
-                                indent=4)
-            utils.print_log('response: {}'.format(r_text))
-            utils.print_log('')
+        # if self.config and self.config['debug_mode']:
+        #     r_text = json.dumps(self.response.json(),
+        #                         ensure_ascii=False,
+        #                         sort_keys=True,
+        #                         indent=4)
+        #     utils.print_log('response: {}'.format(r_text))
+        #     utils.print_log('')
 
     def generate_url(self, origin_url):
         if not str(origin_url).startswith('http'):
