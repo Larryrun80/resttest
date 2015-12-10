@@ -52,16 +52,17 @@ class TestFile():
         utils.print_log('starting test')
 
     def update_context(self, request_id, response):
-        for c in self.context:
-            if request_id in c['request_id']:
-                try:
-                    c['value'] = utils.get_json_with_path(
-                        response.json(), c['path'])
-                    c['timestamp'] = arrow.now('Asia/Shanghai')
-                except:
-                    utils.print_log(
-                        'try to get context value {} failed'
-                        ''.format(c['name']))
+        if self.context:
+            for c in self.context:
+                if request_id in c['request_id']:
+                    try:
+                        c['value'] = utils.get_json_with_path(
+                            response.json(), c['path'])
+                        c['timestamp'] = arrow.now('Asia/Shanghai')
+                    except:
+                        utils.print_log(
+                            'try to get context value {} failed'
+                            ''.format(c['name']))
 
     def test_requests(self):
         for t_id in self.order:

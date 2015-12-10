@@ -50,9 +50,17 @@ class TestRequest():
             self.expectations = doc['expectations']
 
     def test(self):
-        self.send_request()
-        self.print_info()
-        self.check_expectations()
+        try:
+            self.send_request()
+        except:
+            utils.print_separator()
+            fail_msg = 'request failed on {}, please check your request'
+            utils.print_log(
+                ColorText(fail_msg.format(self.name),  'warning'))
+
+        if self.response:
+            self.print_info()
+            self.check_expectations()
 
     def send_request(self):
         if self.method not in self.SUPPORTED_HTTP_METHODS:
@@ -81,7 +89,8 @@ class TestRequest():
             raise RestTestError('NO_RESPONSE')
         utils.print_log('##### case:   {}'.format(
             ColorText(self.name, 'keywords')))
-        utils.print_log('####### id:   {}'.format(ColorText(self.id, 'keywords')))
+        utils.print_log(
+            '####### id:   {}'.format(ColorText(self.id, 'keywords')))
         utils.print_log('### remark:   {}'.format(
             ColorText(self.description, 'keywords')))
         r_string = '{} {}'.format(self.method.upper(), self.response.url)

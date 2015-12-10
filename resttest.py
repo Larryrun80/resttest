@@ -4,6 +4,7 @@
 
 from configparser import ConfigParser
 import os
+import sys
 import traceback
 
 from testapp.utils import utils
@@ -25,12 +26,13 @@ def read_config():
 
     # read config settings from config file
     try:
-        config = ConfigParser()
-        config.read(CONFIG_FILE)
-        if config.has_section('GENERAL'):
+        cp = ConfigParser()
+        print(CONFIG_FILE)
+        cp.read(CONFIG_FILE)
+        if cp.has_section('GENERAL'):
             config['debug_mode'] = \
-                'true' == config.get('GENERAL', 'Debug_mode').lower()
-    except:
+                'true' == cp.get('GENERAL', 'Debug_mode').lower()
+    except TypeError:
         msg = ColorText('get config failed, using default settings', 'warning')
         utils.print_log(msg)
 
@@ -63,6 +65,8 @@ if __name__ == '__main__':
                     utils.print_log(e.message)
                 else:
                     raise e
+            except Exception as e:
+                raise e
         Expectation.print_summary()
     except RestTestError as e:
         traceback.print_exc()
