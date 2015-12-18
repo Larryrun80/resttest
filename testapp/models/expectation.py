@@ -98,10 +98,9 @@ class Expectation():
                 self.print_result('FAIL', word=word)
 
     def check_value(self):
-        if self.left is None or self.right is None or not self.op \
-                or not self.pos:
+        if self.left is None or self.right is None or not self.op:
             raise RestTestError('SOMETHING_MISSING',
-                                sth='left, right, pos or op')
+                                sth='left, right or op')
         if self.op not in self.SUPPORTED_OPERATORS.keys():
             raise RestTestError('UNSUPPORT_OPERATOR',
                                 operator=self.op)
@@ -168,7 +167,6 @@ class Expectation():
             self.failed.append(fail_info)
             check_result = ColorText('failed', 'fail')
         utils.print_log(m_result.format(check_result))
-        utils.print_log('test')
 
     def pass_expression(self):
         oprands = self.deal_operands()
@@ -182,9 +180,15 @@ class Expectation():
         # deal left and right, result kept in value[0], value[1]
         for i, item in enumerate(to_deal, 0):
             if isinstance(item, str) and str(item).startswith('.'):
-                key = str(item)[1:]
+                pos = str(item).rfind('.')
+                key = str(item)[pos+1:]
+                parent = '.'
+                if pos > 0:
+                    parent = str(item)[:pos]
+                print(parent)
+                # get parent doc
                 json_data = utils.get_json_with_path(
-                    self.response.json(), self.pos)
+                    self.response.json(), parent)
                 # if what we want is a value of key
                 if not isinstance(json_data, list):
                     if key in json_data.keys():
