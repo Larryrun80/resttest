@@ -19,20 +19,20 @@ def print_separator():
     print_log('')
 
 
-def get_json_with_path(json_obj, path):
+def get_json_with_path(json_pos, path):
     if not str(path).startswith('.'):
         raise RestTestError('FORMAT_ERROR',
                             correct_type='string start with "."')
 
     if path == '.':
-        return json_obj
+        return json_pos
 
     elements = path[1:].split('.')
     try:
         for element in elements:
-            json_obj = json_obj[element]
+            json_pos = json_pos[element]
     except:
         raise RestTestError('KEY_NOT_FOUND',
                             key=element,
-                            collection=json_obj)
-    return json_obj
+                            collection=json_pos)
+    return json_pos

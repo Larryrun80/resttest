@@ -14,7 +14,7 @@ class Expectation():
 
     SUPPORTED_TYPE = \
         ('status_code', 'include_keys', 'include_words', 'value')
-    ATTRIBUTES = ('value', 'obj', 'left', 'op', 'right')
+    ATTRIBUTES = ('value', 'pos', 'left', 'op', 'right')
     SUPPORTED_OPERATORS = {
         '=': 'eq',
         '!=': 'ne',
@@ -63,13 +63,13 @@ class Expectation():
             self.print_result('FAIL')
 
     def check_include_keys(self):
-        if not self.value or not self.obj:
+        if not self.value or not self.pos:
             raise RestTestError('SOMETHING_MISSING',
-                                sth='value or obj')
+                                sth='value or pos')
 
         for key in self.value:
             json_value = utils.get_json_with_path(
-                self.response.json(), self.obj)
+                self.response.json(), self.pos)
             if isinstance(json_value, dict) and key in json_value.keys():
                 self.print_result('SUCCESS', key=key)
             elif isinstance(json_value, list):
@@ -84,13 +84,13 @@ class Expectation():
                 self.print_result('FAIL', key=key)
 
     def check_include_words(self):
-        if not self.value or not self.obj:
+        if not self.value or not self.pos:
             raise RestTestError('SOMETHING_MISSING',
-                                sth='value or obj')
+                                sth='value or pos')
 
         for word in self.value:
             json_value = utils.get_json_with_path(
-                self.response.json(), self.obj)
+                self.response.json(), self.pos)
             text = json.dumps(json_value, ensure_ascii=False)
             if word in text:
                 self.print_result('SUCCESS', word=word)
@@ -99,9 +99,9 @@ class Expectation():
 
     def check_value(self):
         if self.left is None or self.right is None or not self.op \
-                or not self.obj:
+                or not self.pos:
             raise RestTestError('SOMETHING_MISSING',
-                                sth='left, right, obj or op')
+                                sth='left, right, pos or op')
         if self.op not in self.SUPPORTED_OPERATORS.keys():
             raise RestTestError('UNSUPPORT_OPERATOR',
                                 operator=self.op)
@@ -135,10 +135,10 @@ class Expectation():
             e_value = 'be ' + str(self.value)
         if self.type == 'include_keys':
             e_type = 'key ' + params['key']
-            e_value = 'in ' + str(self.obj)
+            e_value = 'in ' + str(self.pos)
         if self.type == 'include_words':
             e_type = 'word ' + params['word']
-            e_value = 'in ' + str(self.obj)
+            e_value = 'in ' + str(self.pos)
         if self.type == 'value':
             e_type = str(self.left)
             e_value = str(self.op) + ' ' + str(self.right)
@@ -184,7 +184,7 @@ class Expectation():
             if isinstance(item, str) and str(item).startswith('.'):
                 key = str(item)[1:]
                 json_data = utils.get_json_with_path(
-                    self.response.json(), self.obj)
+                    self.response.json(), self.pos)
                 # if what we want is a value of key
                 if not isinstance(json_data, list):
                     if key in json_data.keys():
