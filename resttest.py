@@ -57,23 +57,24 @@ if __name__ == '__main__':
                 TEST_DIR))
 
         for tfile in os.listdir(TEST_DIR):
-            utils.print_separator()
-            msg = ColorText('trying to read file {}'.format(
-                tfile), 'keywords')
-            utils.print_log(msg)
-            filename = '{0}/{1}'.format(TEST_DIR, tfile)
-            try:
-                tf = TestFile(filename)
-                tf.print_file_info()
-                tf.test_requests()
-            except RestTestError as e:
-                if e.code == 100003:
-                    msg = ColorText(e.message, 'warning')
-                    utils.print_log(e.message)
-                else:
+            if tfile[0] != '.' and tfile[-1] != '~':
+                utils.print_separator()
+                msg = ColorText('trying to read file {}'.format(
+                    tfile), 'keywords')
+                utils.print_log(msg)
+                filename = '{0}/{1}'.format(TEST_DIR, tfile)
+                try:
+                    tf = TestFile(filename)
+                    tf.print_file_info()
+                    tf.test_requests()
+                except RestTestError as e:
+                    if e.code == 100003:
+                        msg = ColorText(e.message, 'warning')
+                        utils.print_log(e.message)
+                    else:
+                        raise e
+                except Exception as e:
                     raise e
-            except Exception as e:
-                raise e
 
         Expectation.print_summary(config['debug_mode'])
     except RestTestError as e:

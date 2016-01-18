@@ -74,12 +74,12 @@ For example:
             "method": "GET",
             "url": "some url to request",
             ......<font color="red"><b>
-            "exceptations": [
+            "expectations": [
                 {
                     "type": "status_code",
                     "value": 200
                 }
-                ... other exceptations
+                ... other expectations
             ]</b></font>
         }
         ......
@@ -107,7 +107,7 @@ For example:
     ```
     {
         "type": "include_keys",
-        "pos": "."
+        "pos": ".",
         "value": ["key1", "key2", ...]
     }
     ```
@@ -157,7 +157,7 @@ For example:
     ```
     {
         "type": "include_words",
-        "pos": "."
+        "pos": ".",
         "value": ["words 1", "words 2", ...]
     }
     ```
@@ -191,7 +191,7 @@ For example:
     {
         "type": "value",
         "left": ".language",
-        "op": in,
+        "op": "in",
         "right": ["English", "Franch", "Chinese"]
     }
     ```
@@ -200,6 +200,57 @@ For example:
     First expactation indicates timestamp should >0, second indicates market price of the book should greater than or equal all selling editions, third indicates book language should be "English" or "Franch" or "Chinese".
 
 ### Context
+"Context" is another important concept of resttest. In an intergrated test process, params passed between tests is inevitable. For example, think if we want to get user infomation, the interface always asked for a user token, so we must access a login or regist interface first, get user's access token and than use it to get user information. In resttest, it's "context" help user implement such message dilevery between interface tests. Without "context", you must interrupt test process manually to change access information.
+
+"Context" include two parts: "defination" and "usage". "Defination" is where we assign params to be delivered, and "usage" is where these params are used to request a http interface.
+
+1. defination of context
+"Defination" will be put at the top level of your json data, see following example:
+<pre>
+{
+    "id": "id-of-postman-collection",
+    "name": "example of context",
+    "order": [
+        "some-test-id-should-be-firstly-run",
+        "some-test-id-should-be-secondly-run"
+        ...
+    ],<font color="red"><b>
+    "context": [
+        {
+            "name": "mobile",
+            "request": [],
+            "default": "10955832"
+        },
+        {
+            "name": "token",
+            "request": [
+                {
+                    "id": "some-request-id",
+                    "path": ".data.key"
+                }
+            ],
+            "default":  ""
+        }
+        ...
+    ],</b></font>
+    "requests": [
+        {
+            "id": "some-test-id-should-be-firstly-run",
+            "name": "1st run test",
+            "method": "GET",
+            "data": [],
+            "url": "https://url-of-test/",
+            "collectionId": "id-of-postman-collection",
+            "expectations": []
+        }
+        ...
+    ]
+}
+</pre>
+In this example, we can find every context will include three key-value pair: "name", "request" and "default".
+
+"name" is a global unique value to indicate which context we should define and use. "request" includes a list of request 
+
 
 ### FAQs
 

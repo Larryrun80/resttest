@@ -289,4 +289,5 @@ class Expectation():
                 utils.print_log('failed on {}'.format(
                    expectation['expectation'], 'fail'))
                 if print_response:
-                    utils.print_log('response: {}'.format(expectation['response']))
+                    utils.print_log(
+                        'response: {}'.format(expectation['response']))

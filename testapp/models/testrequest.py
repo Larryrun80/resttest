@@ -123,16 +123,19 @@ class TestRequest():
                 param = string[pos1+1:pos2]
 
                 # 使用context变量值替换
-                for c in self.context:
-                    if c['name'] == param:
-                        if 'value' in c.keys() and c['value']:
-                            string = string.replace(
-                                '{' + param + '}', c['value'])
-                        elif c['default']:
-                            string = string.replace(
-                                '{' + param + '}', c['default'])
-                        else:
-                            # if can not find a value, give blank
-                            string = string.replace(
-                                '{' + param + '}', '')
+                if self.context:
+                    for c in self.context:
+                        if c['name'] == param:
+                            if 'value' in c.keys() and c['value']:
+                                string = string.replace(
+                                    '{' + param + '}', c['value'])
+                            elif c['default']:
+                                string = string.replace(
+                                    '{' + param + '}', c['default'])
+                            else:
+                                # if can not find a value, give blank
+                                string = string.replace(
+                                    '{' + param + '}', '')
+                else:
+                    break
             return string
