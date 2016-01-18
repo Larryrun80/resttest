@@ -74,7 +74,7 @@ class TestRequest():
             raise RestTestError('NO_RESPONSE')
         if not self.expectations:
             utils.print_log(
-                ColorText('no exceptation found, passed', 'warning'))
+                ColorText('no expectation found, passed', 'warning'))
             return
 
         for expectation in self.expectations:
