@@ -239,7 +239,7 @@ For example:
             "name": "1st run test",
             "method": "GET",
             "data": [],
-            "url": "https://url-of-test/",
+            "url": "https://url-of-test/{token}/",
             "collectionId": "id-of-postman-collection",
             "expectations": []
         }
@@ -249,7 +249,13 @@ For example:
 </pre>
 In this example, we can find every context will include three key-value pair: "name", "request" and "default".
 
-"name" is a global unique value to indicate which context we should define and use. "request" includes a list of request 
+"name" is a global unique key to indicate which context we should define and use. "request" includes a list, which indicate we can get context value in which request(via request id) and then which path in the response. "default" is the default value if we haven't received any response to update this context value, you can also use "default" to set static variables(like "mobile" context in our example, with no request set).
+
+Make sense the value of context will never be set in this config file. Our program will read context info when execute this file and then update the corresponde value in memory.
+
+After we defined these contexts, we and use them in anywhere you want in request section. Remember to use "{context_name}" to indicate what you want is a context value, see the url part of above example(in requests section).
+
+Another thing must be mentioned is we using a request list in context defination. This mean every request in the list will update the context value. 
 
 
 ### FAQs
