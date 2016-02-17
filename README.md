@@ -58,7 +58,8 @@ We using "expectations" to manage whether interfaces response correctly as we wa
 To enable expectation, we need to add an "expectations" key in a request dictionary. Value of this key must be a list, and every expectation as a dictionary in this list.
 
 For example:
-<pre>{
+<pre>
+{
     "id": "abcd-abc-abc-abc-abcdef",
     "name": "example of exceptation",
     "description": "in this example, you can see we implement expectations in every request dictionary",
@@ -84,7 +85,8 @@ For example:
         }
         ......
     ]
-}</pre>
+}
+</pre>
 
 1. "status_code"
 
