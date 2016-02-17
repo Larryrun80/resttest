@@ -91,12 +91,12 @@ For example:
     This type is used to see if the responsed http status code is correct.
 
     format for using this type is:
-    ```
+```
     {
         "type": "status_code",
         "value": 200
     }
-    ```
+```
     you can replace 200 with any valid http status code if you want. resttest will return "passed" if response code is the value you set, or "failed" if they are not matching.
 
 2. "include_keys"
@@ -104,17 +104,17 @@ For example:
     This type is used to check if a key include in specific responsed data.
 
     format for using this type is:
-    ```
+```
     {
         "type": "include_keys",
         "pos": ".",
         "value": ["key1", "key2", ...]
     }
-    ```
+```
     **here we meets an important concept: "pos"**, you will use "pos" in all exceptation types except "status_code". "pos" indicate which json level we will implement our exceptation. Every "pos" value should start with '.', and this means the root level of the json data.
 
     "pos" in "include_keys" tell resttest where to find the key we want. Assuming we get following response when request a book's info:
-    ```
+```
     {
         "bookname": "Nineteen Eighty-Four"，
         "market price": 20,
@@ -144,7 +144,7 @@ For example:
         ],
         "timestamp": 1450432485
     }
-    ```
+```
     Resttest will return true if you expect "include_keys" "bookname" in pos ".", or "include_keys" "price" in pos ".editions", or "include_keys" "novels" in pos ".author"
 
     In "value", you can put a list of key you want. Make sense that if you only want to check one key, you need to build a list, too. As `"value": ["key"]`. Resttest will create an exceptation for every key.
@@ -154,13 +154,13 @@ For example:
 3. "include_words"
 
     This type is used to check if a string is include in specific responsed data. Usage of this type is similar with "include_keys", see example:
-    ```
+```
     {
         "type": "include_words",
         "pos": ".",
         "value": ["words 1", "words 2", ...]
     }
-    ```
+```
     If we using the sample book-info response in "include_keys" section, resttest will return true if you expect "include_words" "George Orwell" in pos "."/".author" , or "include_words" "kindle edition" in pos "."/".editions"
 
 4. "value"
@@ -175,7 +175,7 @@ For example:
     - in: "in"
 
     see examples, using book-info response in "include_keys" section:
-    ```
+```
     {
         "type": "value",
         "left": ".timestamp",
@@ -194,7 +194,7 @@ For example:
         "op": "in",
         "right": ["English", "Franch", "Chinese"]
     }
-    ```
+```
     In "value" type, we use 3 new parameters: "left", "right", and "op". "left"/"right" is left/right part of an comparison expression，and "op" stands for operation. "left"/"right" can be a value of specific key in response (same format as "pos" in "include_keys"/"include_words") or a number, make sense that all value of left/right should be number except "in" operator. 
 
     First expactation indicates timestamp should >0, second indicates market price of the book should greater than or equal all selling editions, third indicates book language should be "English" or "Franch" or "Chinese".
