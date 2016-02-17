@@ -32,7 +32,8 @@ def get_json_with_path(json_pos, path):
         for element in elements:
             json_pos = json_pos[element]
     except:
-        raise RestTestError('KEY_NOT_FOUND',
-                            key=element,
-                            collection=json_pos)
+        return None
+        # raise RestTestError('KEY_NOT_FOUND',
+        #                     key=element,
+        #                     collection=json_pos)
     return json_pos

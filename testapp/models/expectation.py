@@ -70,7 +70,9 @@ class Expectation():
         for key in self.value:
             json_value = utils.get_json_with_path(
                 self.response.json(), self.pos)
-            if isinstance(json_value, dict) and key in json_value.keys():
+            if not json_value:
+                self.print_result('NOTFOUND', key=key)
+            elif isinstance(json_value, dict) and key in json_value.keys():
                 self.print_result('SUCCESS', key=key)
             elif isinstance(json_value, list):
                 has_key = True
@@ -91,8 +93,9 @@ class Expectation():
         for word in self.value:
             json_value = utils.get_json_with_path(
                 self.response.json(), self.pos)
-            text = json.dumps(json_value, ensure_ascii=False)
-            if word in text:
+            if not json_value:
+                self.print_result('NOTFOUND', word=word)
+            elif word in json.dumps(json_value, ensure_ascii=False):
                 self.print_result('SUCCESS', word=word)
             else:
                 self.print_result('FAIL', word=word)
@@ -105,10 +108,19 @@ class Expectation():
             raise RestTestError('UNSUPPORT_OPERATOR',
                                 operator=self.op)
 
-        if self.pass_expression():
-            self.print_result('SUCCESS')
+        oprands = self.deal_operands()
+        if not isinstance(oprands, list) or len(oprands) != 2:
+            raise RestTestError('OPRANDS_ERROR')
+
+        if oprands[0] is None:
+            self.print_result('NOTFOUND', key=self.left)
+        elif oprands[1] is None:
+            self.print_result('NOTFOUND', key=self.right)
         else:
-            self.print_result('FAIL')
+            if self.campare_operands(oprands):
+                self.print_result('SUCCESS')
+            else:
+                self.print_result('FAIL')
 
     def print_result(self, result, **params):
         ''' print_result
@@ -117,7 +129,7 @@ class Expectation():
             msg only work in 'FAIL' type
             params used to print statement info
         '''
-        result_type = ('SUCCESS', 'FAIL')
+        result_type = ('SUCCESS', 'FAIL', 'NOTFOUND')
         if result not in result_type:
             raise RestTestError('UNSUPPORT_TYPE', type=result,
                                 whenclause='print expectation result')
@@ -150,6 +162,25 @@ class Expectation():
         if result == 'SUCCESS':
             Expectation.successed += 1
             check_result = ColorText('passed', 'success')
+        elif result == 'NOTFOUND':
+            error_info = '{} not found in response'.format(str(self.pos))
+            if self.type == 'value':
+                error_info = '{} not found in response'.format(params['key'])
+            fail_info = {
+                                        'api': self.name,
+                                        'method': self.response.request.method,
+                                        'url': self.response.url,
+                                        'data': self.response.request.body,
+                                        'expectation': error_info,
+                                        'code': self.response.status_code,
+                                        'response':
+                                        json.dumps(self.response.json(),
+                                                   ensure_ascii=False,
+                                                   sort_keys=True,
+                                                   indent=4)
+                                 }
+            self.failed.append(fail_info)
+            check_result = ColorText('failed', 'fail')
         else:
             fail_info = {
                                         'api': self.name,
@@ -168,10 +199,6 @@ class Expectation():
             check_result = ColorText('failed', 'fail')
         utils.print_log(m_result.format(check_result))
 
-    def pass_expression(self):
-        oprands = self.deal_operands()
-        return self.campare_operands(oprands)
-
     def deal_operands(self):
         '''get data from response and generate oprands to campare
         '''
@@ -185,18 +212,21 @@ class Expectation():
                 parent = '.'
                 if pos > 0:
                     parent = str(item)[:pos]
-                print(parent)
+
                 # get parent doc
                 json_data = utils.get_json_with_path(
                     self.response.json(), parent)
+                if not json_data:
+                    return None
                 # if what we want is a value of key
                 if not isinstance(json_data, list):
                     if key in json_data.keys():
                         values[i] = json_data[key]
                     else:
-                        raise RestTestError('KEY_NOT_FOUND',
-                                            key=key,
-                                            collection=json_data)
+                        values[i] = None
+                        # raise RestTestError('KEY_NOT_FOUND',
+                        #                     key=key,
+                        #                     collection=json_data)
                 # if we got a list, get all value in list
                 else:
                     v_list = []
@@ -204,9 +234,10 @@ class Expectation():
                         if key in data.keys():
                             v_list.append(data[key])
                         else:
-                            raise RestTestError('KEY_NOT_FOUND',
-                                                key=key,
-                                                collection=data)
+                            v_list = None
+                            # raise RestTestError('KEY_NOT_FOUND',
+                            #                     key=key,
+                            #                     collection=data)
                     values[i] = v_list
             # if not a sign to get data from response, just reutrn value
             else:
