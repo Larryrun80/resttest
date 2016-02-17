@@ -253,6 +253,8 @@ In this example, we can find every context will include three key-value pair: "n
 
 Make sense the value of context will never be set in this config file. Our program will read context info when execute this file and then update the corresponde value in memory.
 
+2. usage
+
 After we defined these contexts, we and use them in anywhere you want in request section. Remember to use "{context_name}" to indicate what you want is a context value, see the url part of above example(in requests section).
 
 Another thing must be mentioned is we using a request list in context defination. This mean every request in the list will update the context value. 
