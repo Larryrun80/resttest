@@ -56,7 +56,7 @@ class TestRequest():
             utils.print_log(
                 ColorText(fail_msg.format(self.name),  'warning'))
 
-        if self.response:
+        if self.response.status_code:
             self.print_info()
             self.check_expectations()
 
@@ -70,7 +70,7 @@ class TestRequest():
             self.response = mtd(self.url)
 
     def check_expectations(self):
-        if not self.response:
+        if not self.response.status_code:
             raise RestTestError('NO_RESPONSE')
         if not self.expectations:
             utils.print_log(
@@ -83,7 +83,7 @@ class TestRequest():
 
     def print_info(self):
         utils.print_separator()
-        if not self.response:
+        if not self.response.status_code:
             raise RestTestError('NO_RESPONSE')
         utils.print_log('##### case:   {}'.format(
             ColorText(self.name, 'keywords')))

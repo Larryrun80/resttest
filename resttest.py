@@ -57,7 +57,7 @@ if __name__ == '__main__':
                 TEST_DIR))
 
         for tfile in os.listdir(TEST_DIR):
-            if tfile[0] != '.' and tfile[-1] != '~':
+            if tfile[0] != '.' and tfile[-1] != '~' and tfile[-1] != '～':
                 utils.print_separator()
                 msg = ColorText('trying to read file {}'.format(
                     tfile), 'keywords')
